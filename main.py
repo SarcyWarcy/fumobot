@@ -112,11 +112,11 @@ def fontSize(size: int):
   return ImageFont.truetype("./assets/Orbitron/Orbitron-Bold.ttf", size)
 
 async def loadCogs():
-  await bot.load_extension('generalcommands')
-  await bot.load_extension('fumocommands')
-  await bot.load_extension('streamcontrol')
-  await bot.load_extension('devcommands')
-  await bot.load_extension('nsfwcommands')
+  await bot.load_extension('extensions.generalcommands')
+  await bot.load_extension('extensions.fumocommands')
+  await bot.load_extension('extensions.streamcontrol')
+  await bot.load_extension('extensions.devcommands')
+  await bot.load_extension('extensions.nsfwcommands')
 
 @bot.event
 async def on_ready():
