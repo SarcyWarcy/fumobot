@@ -58,9 +58,18 @@ class FumoCommands(commands.Cog, name="Fumo"):
         row = await result.fetchone()
 
         if row is None:
-          result = await cursor.execute("INSERT INTO players (id) VALUES (?)", (user.id))
-          row = await result.fetchone()
-          await db.commit()
+          await ctx.reply(embed=discord.Embed(
+            description=f"**Balance**:\n<:power_item:1329068042650386518> 0",
+            timestamp=datetime.now(),
+            color=discord.Color.purple(),
+          ).set_footer(
+            text=ctx.author.name,
+            icon_url=ctx.author.avatar.url
+          ).set_author(
+            name=user.name, 
+            icon_url=user.avatar.url
+          ))
+          return
           
         print(row)
 
@@ -122,7 +131,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
           UPDATE players SET balance = balance + ? WHERE id = ?
           """, (winnings, ctx.author.id)
         )
-
+        await db.commit()
     await rolled.edit(embed=rolledEmbed)
 
 async def setup(bot):
