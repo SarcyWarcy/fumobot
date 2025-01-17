@@ -1,0 +1,52 @@
+from discord.ext import commands
+from datetime import timedelta
+import asqlite
+
+# THIS IS ALL FOR CONVERTERS
+
+class Duration(commands.Converter):
+  async def convert(self, ctx, argument):
+    units = {'d': 86400, 'h': 3600, 'm': 60, 's': 1}
+    seconds = 0
+    currentTime = ""
+
+    for char in argument:
+      if char.isdigit():
+        currentTime += char
+      elif char in units and currentTime:
+        seconds += int(currentTime) * units[char]
+        currentTime = ""
+      
+    return timedelta(seconds=seconds)
+  
+# THIS IS FOR CHECKS
+
+class Hierarchy(commands.CheckFailure):
+  pass
+
+class NotEnoughMoney(commands.CheckFailure):
+  pass
+
+def roleIsHigher(ctx, member, target):
+  if isinstance(target, list):
+    for t in target:
+      if member.top_role <= t.top_role:
+        raise Hierarchy()
+      else:
+        return
+  if member.top_role <= target.top_role:
+    raise Hierarchy()
+  return
+
+async def lowBalance(ctx, power: int):
+  async with asqlite.connect("fumo.db") as db:
+    async with db.cursor() as cursor:
+      result = await cursor.execute(
+        """
+        SELECT balance FROM players WHERE id = ?
+        """, (ctx.author.id)
+      )
+      balance = await result.fetchone()
+      if balance[0] < power:
+        raise NotEnoughMoney()
+  
