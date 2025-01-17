@@ -15,7 +15,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(
   command_prefix="*", 
   intents=intents, 
-  activity=discord.Activity(name="Za WARUDO!", type=discord.ActivityType.streaming),
+  activity=discord.Activity(name="Cleaning the Hakurei Shrine", type=discord.ActivityType.streaming),
   owner_ids=[556445511066976296, 1245710245192269917, 824431868589768734]
 )
 myServerId = 1251195753020522639
