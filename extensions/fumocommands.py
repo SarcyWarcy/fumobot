@@ -22,6 +22,16 @@ async def fumoDbCheck():
       """)
       await db.commit()
 
+async def updateBalance(id, power):
+  async with asqlite.connect("fumo.db") as db:
+    async with db.cursor() as cursor:
+      await cursor.execute(
+        """
+        UPDATE players SET balance = balance + ? WHERE id = ?
+        """, (power, id)
+      )
+      await db.commit()
+
 class FumoCommands(commands.Cog, name="Fumo"):
   """Take care of your Fumos here in this simple pet economy game!"""
   def __init__(self, bot):
@@ -124,14 +134,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
     )
     await asyncio.sleep(4.5)
 
-    async with asqlite.connect("fumo.db") as db:
-      async with db.cursor() as cursor:
-        await cursor.execute(
-          """
-          UPDATE players SET balance = balance + ? WHERE id = ?
-          """, (winnings, ctx.author.id)
-        )
-        await db.commit()
+    await updateBalance(ctx.author.id, winnings)
     await rolled.edit(embed=rolledEmbed)
 
 async def setup(bot):
