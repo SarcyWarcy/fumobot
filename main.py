@@ -204,6 +204,7 @@ async def on_command_error(ctx, err):
     await ctx.reply(f"You don't have enough money to do this... Brokie.")
   else:
     print(err)
+    await ctx.reply(f"Err... an unexpected issue happened! The problem has been sent to Ryn... Hang on tight!")
 
 bot.help_command = MyHelpCommand()
 bot.run(token) 

@@ -18,7 +18,30 @@ class Duration(commands.Converter):
         currentTime = ""
       
     return timedelta(seconds=seconds)
-  
+
+# USEFUL FUNCTIONS
+
+async def updateBalance(id: int, power: int):
+  async with asqlite.connect("fumo.db") as db:
+    async with db.cursor() as cursor:
+      await cursor.execute(
+        """
+        UPDATE players SET balance = balance + ? WHERE id = ?
+        """, (power, id)
+      )
+      await db.commit()
+
+async def checkBalance(id: int):
+  async with asqlite.connect("fumo.db") as db:
+    async with db.cursor() as cursor:
+      result = await cursor.execute(
+        """
+        SELECT balance FROM players WHERE id = ?
+        """, (id)
+      )
+      row = await result.fetchone()
+      return row
+
 # THIS IS FOR CHECKS
 
 class Hierarchy(commands.CheckFailure):
@@ -39,14 +62,10 @@ def roleIsHigher(ctx, member, target):
   return
 
 async def lowBalance(ctx, power: int):
-  async with asqlite.connect("fumo.db") as db:
-    async with db.cursor() as cursor:
-      result = await cursor.execute(
-        """
-        SELECT balance FROM players WHERE id = ?
-        """, (ctx.author.id)
-      )
-      balance = await result.fetchone()
-      if balance[0] < power:
-        raise NotEnoughMoney()
+  result = await checkBalance(ctx.author.id)
+  balance = await result.fetchone()
+  if balance[0] < power:
+    raise NotEnoughMoney()
+      
+
   

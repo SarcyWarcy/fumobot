@@ -22,16 +22,6 @@ async def fumoDbCheck():
       """)
       await db.commit()
 
-async def updateBalance(id, power):
-  async with asqlite.connect("fumo.db") as db:
-    async with db.cursor() as cursor:
-      await cursor.execute(
-        """
-        UPDATE players SET balance = balance + ? WHERE id = ?
-        """, (power, id)
-      )
-      await db.commit()
-
 class FumoCommands(commands.Cog, name="Fumo"):
   """Take care of your Fumos here in this simple pet economy game!"""
   def __init__(self, bot):
@@ -59,42 +49,34 @@ class FumoCommands(commands.Cog, name="Fumo"):
   async def balance(self, ctx, user: discord.User = commands.parameter(default=None, description="The user to be inputted.")):
     """Check a user's balance / power."""
     user = user or ctx.author
-    async with asqlite.connect("fumo.db") as db:
-      async with db.cursor() as cursor:
+    row = await customutilities.checkBalance(user.id)
 
-        result = await cursor.execute(
-          """SELECT balance FROM players WHERE id = ?
-          """, (user.id))
-        row = await result.fetchone()
-
-        if row is None:
-          await ctx.reply(embed=discord.Embed(
-            description=f"**Balance**:\n<:power_item:1329068042650386518> 0",
-            timestamp=datetime.now(),
-            color=discord.Color.purple(),
-          ).set_footer(
-            text=ctx.author.name,
-            icon_url=ctx.author.avatar.url
-          ).set_author(
-            name=user.name, 
-            icon_url=user.avatar.url
-          ))
-          return
+    if row is None:
+      await ctx.reply(embed=discord.Embed(
+        description=f"**Balance**:\n<:power_item:1329068042650386518> 0",
+        timestamp=datetime.now(),
+        color=discord.Color.purple(),
+      ).set_footer(
+        text=ctx.author.name,
+        icon_url=ctx.author.avatar.url
+      ).set_author(
+        name=user.name, 
+        icon_url=user.avatar.url
+      ))
+      return
           
-        print(row)
+    balanceEmbed = discord.Embed(
+      description=f"**Balance**:\n<:power_item:1329068042650386518> {row[0]}",
+      timestamp=datetime.now(),
+      color=discord.Color.purple(),
+    )
+    balanceEmbed.set_footer(
+      text=ctx.author.name,
+      icon_url=ctx.author.avatar.url
+    )
+    balanceEmbed.set_author(name=user.name, icon_url=user.avatar.url)
 
-        balanceEmbed = discord.Embed(
-          description=f"**Balance**:\n<:power_item:1329068042650386518> {row[0]}",
-          timestamp=datetime.now(),
-          color=discord.Color.purple(),
-        )
-        balanceEmbed.set_footer(
-          text=ctx.author.name,
-          icon_url=ctx.author.avatar.url
-        )
-        balanceEmbed.set_author(name=user.name, icon_url=user.avatar.url)
-
-        await ctx.reply(embed=balanceEmbed)
+    await ctx.reply(embed=balanceEmbed)
   
   @commands.command(name="dice")
   async def dice(self, ctx, power: int = commands.parameter(description="The amount of power to be put on bet.")):
@@ -134,7 +116,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
     )
     await asyncio.sleep(4.5)
 
-    await updateBalance(ctx.author.id, winnings)
+    await customutilities.updateBalance(ctx.author.id, winnings)
     await rolled.edit(embed=rolledEmbed)
 
 async def setup(bot):
