@@ -29,10 +29,13 @@ class GachaBox(Item):
       name: str, 
       price: int, 
       description: str,
-      lootDrop: list[Item], 
-      category: str = "Gacha Box", 
+      lootDrop: dict[str, Item], 
+      category: str = "Pack", 
     ):
     super().__init__(name, price, description, category)
+    self.lootDrop = lootDrop
+  
+  
 
 # ALL THE ITEM OBJECTS
 
@@ -80,3 +83,5 @@ EoSDFumos = {
     "./assets/FumoImages/EoSD/Flandre.png"
   )
 }
+
+EoSDBox = GachaBox("Embodiment of Scarlet Devil", 200, "A pack that contain all EoSD Fumos!", EoSDFumos)

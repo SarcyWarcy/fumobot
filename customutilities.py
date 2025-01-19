@@ -50,6 +50,9 @@ class Hierarchy(commands.CheckFailure):
 class NotEnoughMoney(commands.CheckFailure):
   pass
 
+class YoureTheOwner(commands.CheckFailure):
+  pass
+
 def roleIsHigher(ctx, member, target):
   if isinstance(target, list):
     for t in target:
@@ -59,12 +62,13 @@ def roleIsHigher(ctx, member, target):
         return
   if member.top_role <= target.top_role:
     raise Hierarchy()
+  elif target == target.guild.owner:
+    raise YoureTheOwner()
   return
 
 async def lowBalance(ctx, power: int):
   result = await checkBalance(ctx.author.id)
-  balance = await result.fetchone()
-  if balance[0] < power:
+  if result[0] < power:
     raise NotEnoughMoney()
       
 

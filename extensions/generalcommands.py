@@ -11,6 +11,33 @@ class ModerationCommands(commands.Cog, name="Moderation"):
   """Simple moderation commands to keep the server safe!"""
   def __init__(self, bot):
     self.bot = bot
+  
+  @commands.command(name="ban")
+  @commands.has_permissions(ban_members=True)
+  async def ban(
+    self,
+    ctx,
+    members: commands.Greedy[discord.Member] = commands.parameter(
+      description="The member(s) to be banned."
+    ),
+    deleteDays: typing.Optional[int] = commands.parameter(
+      description="The days worth of message to be deleted from the user to be banned. Optional, and doesn't do anything if nothing is inputted.",
+      default=0
+    ),
+    *,
+    reason: str = commands.parameter(
+      description="The reason to ban the user. Will be inputted into the Audit log.",
+      default="No reason provided."
+    )
+  ):
+    """Bans a member from your server."""
+    customutilities.roleIsHigher(ctx, ctx.author, members)
+    banned = ", ".join(member.name for member in members)
+
+    for member in members:
+      await member.ban(delete_message_days=deleteDays, reason=reason)
+    
+    await ctx.reply(f"{banned} have been banned. Reason: {reason}")
 
   @commands.command(name="timeout")
   @commands.has_permissions(moderate_members=True)
@@ -21,11 +48,11 @@ class ModerationCommands(commands.Cog, name="Moderation"):
       description="The member(s) to be timeoutted."
     ), 
     duration: customutilities.Duration = commands.parameter(
-      description="The duration the member will be timeoutted for. Example of the duration format: `3h`, `3m`, `3s`, `2h2m`."
+      description="The duration the member will be timeoutted for. Example of the duration format: `3h`, `3m`, `3s`, `2h2m`. Due to Discord limitations, timeout may not be longer than 28 days."
     ), 
     *, 
     reason: str = commands.parameter(
-      description="The reason to timeout the user. Will be inputted into the Audit Log. Due to Discord limitations, timeout may not be longer than 28 days.",
+      description="The reason to timeout the user. Will be inputted into the Audit Log.",
       default="No reason provided."
     )
   ):
@@ -35,7 +62,6 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     
     for member in members:
       await member.timeout(duration, reason=reason)
-      print(member)
 
     await ctx.reply(f"{timeoutted} have been timeoutted for {duration}. Reason: {reason}")
 
@@ -48,9 +74,11 @@ class GeneralCommands(commands.Cog, name="General"):
   async def nick(
     self,
     ctx,
-    nick: str = commands.parameter(description="The nickname you want to change into.")
+    *,
+    nick: str = commands.parameter(description="The nickname you want to change into.", default=None)
   ):
     """Changes your nickname in a server."""
+    customutilities.roleIsHigher(ctx, ctx.guild.get_member(self.bot.user.id), ctx.author)
     await ctx.author.edit(nick=nick)
     await ctx.reply(":white_check_mark:")
 

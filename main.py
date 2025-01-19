@@ -114,7 +114,6 @@ def fontSize(size: int):
 async def loadCogs():
   await bot.load_extension('extensions.generalcommands')
   await bot.load_extension('extensions.fumocommands')
-  await bot.load_extension('extensions.streamcontrol')
   await bot.load_extension('extensions.devcommands')
   await bot.load_extension('extensions.nsfwcommands')
 
@@ -195,13 +194,17 @@ async def on_command_error(ctx, err):
   elif isinstance(err, commands.MissingRequiredArgument):
     await ctx.reply(f"Missing `{err.param.name}` argument, which is required. Try to use `*help {ctx.command.name}` for the proper usage.")
   elif isinstance(err, commands.MissingPermissions):
-    await ctx.reply(f"{err.missing_permissions}")
+    await ctx.reply(f"You are missing permissions to do this command!")
   elif isinstance(err, customutilities.Hierarchy):
-    await ctx.reply(f"Cannot execute this command since your top role is equal/lower than the one you're trying to moderate.")
+    await ctx.reply(f"Cannot execute this command since your top role is equal/lower than the one you're trying to moderate, or I'm trying to edit you and your role is higher than mine.")
   elif isinstance(err, commands.NSFWChannelRequired):
     await ctx.reply(f"Naughty! Go to a NSFW Channel first to use this command!")
   elif isinstance(err, customutilities.NotEnoughMoney):
     await ctx.reply(f"You don't have enough money to do this... Brokie.")
+  elif isinstance(err, commands.BotMissingPermissions):
+    await ctx.reply(f"I don't have permissions to do this... Or your role is higher than mine!")
+  elif isinstance(err, customutilities.YoureTheOwner):
+    await ctx.reply(f"I can't do this since you're the server owner!")
   else:
     print(err)
     await ctx.reply(f"Err... an unexpected issue happened! The problem has been sent to Ryn... Hang on tight!")
