@@ -22,6 +22,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     ),
     deleteDays: typing.Optional[int] = commands.parameter(
       description="The days worth of message to be deleted from the user to be banned. Optional, and doesn't do anything if nothing is inputted.",
+      displayed_name="delete days",
       default=0
     ),
     *,
