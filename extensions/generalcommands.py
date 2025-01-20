@@ -38,6 +38,29 @@ class ModerationCommands(commands.Cog, name="Moderation"):
       await member.ban(delete_message_days=deleteDays, reason=reason)
     
     await ctx.reply(f"{banned} have been banned. Reason: {reason}")
+  
+  @commands.command(name="kick")
+  @commands.has_permissions(kick_members=True)
+  async def kick(
+    self,
+    ctx,
+    members: commands.Greedy[discord.Member] = commands.parameter(
+      description="The member(s) to be kicked."
+    ),
+    *,
+    reason: str = commands.parameter(
+      description="The reason to kick the user. Will be inputted into the Audit log.",
+      default="No reason provided."
+    )
+  ):
+    """Kicks a member from your server."""
+    customutilities.roleIsHigher(ctx, ctx.author, members)
+    kicked = ", ".join(member.name for member in members)
+
+    for member in members:
+      await member.kick(reason=reason)
+    
+    await ctx.reply(f"{kicked} have been banned. Reason: {reason}")
 
   @commands.command(name="timeout")
   @commands.has_permissions(moderate_members=True)

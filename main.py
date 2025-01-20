@@ -1,3 +1,6 @@
+import truststore
+truststore.inject_into_ssl()
+
 import discord
 import logging
 from discord.ext import commands
@@ -182,6 +185,7 @@ async def on_member_join(member):
             finalImage.save(screenshotter, 'PNG')
             screenshotter.seek(0)
             await channel.send(f"Welcome to my domain, {member.mention}! Enjoy your stay here!", file=discord.File(screenshotter, 'WelcomeImage.png'))
+            await member.send(f"Hi! Welcome to the Fumoland private server! Wait a bit before Ryn gives you the role to freely explore the channels!")
 
 @bot.event
 async def on_command_error(ctx, err):
@@ -208,6 +212,8 @@ async def on_command_error(ctx, err):
   else:
     print(err)
     await ctx.reply(f"Err... an unexpected issue happened! The problem has been sent to Ryn... Hang on tight!")
+    owner = ctx.bot.get_user(1245710245192269917)
+    await owner.send(err)
 
 bot.help_command = MyHelpCommand()
 bot.run(token) 
