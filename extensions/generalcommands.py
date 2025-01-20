@@ -60,7 +60,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     for member in members:
       await member.kick(reason=reason)
     
-    await ctx.reply(f"{kicked} have been banned. Reason: {reason}")
+    await ctx.reply(f"{kicked} have been kicked. Reason: {reason}")
 
   @commands.command(name="timeout")
   @commands.has_permissions(moderate_members=True)

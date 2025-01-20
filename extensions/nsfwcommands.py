@@ -18,7 +18,7 @@ class NSFWCommands(commands.Cog, name="NSFW"):
     #tags: commands.Greedy[str] = commands.parameter(description="The tags to be added into one of the presets.")
   ):
     """A command to save presets to automatically sort stuff based on what you like."""
-    print("hm.")
+    await ctx.reply("This command isn't working... yet! Stay tuned!")
 
 async def setup(bot):
   await bot.add_cog(NSFWCommands(bot))
