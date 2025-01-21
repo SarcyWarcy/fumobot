@@ -86,15 +86,15 @@ class FumoCommands(commands.Cog, name="Fumo"):
       raise commands.BadArgument("You cannot bet less than <:power_item:1329068042650386518> 2!")
 
     diceEmojis = [
-      "<:dice1:1329654498540519454>",
-      "<:dice2:1329654509340721173>",
-      "<:dice3:1329654500625219584>",
-      "<:dice4:1329654502604673045>",
-      "<:dice5:1329654504710344805>",
-      "<:dice6:1329654507302555689>"
+      "<:DiceOne:1331122935322382437>",
+      "<:DiceTwo:1331122981635756042>",
+      "<:DiceThree:1331123022962233414>",
+      "<:DiceFour:1331123084597530624>",
+      "<:DiceFive:1331123131116687403>",
+      "<:DiceSix:1331123203661107284>"
       ]
     rollingEmbed = discord.Embed(
-      description=f"<a:diceroll:1329655140415967293> | Rolling a dice for <:power_item:1329068042650386518> {power}...",
+      description=f"<a:DiceAnimation:1331122379128045670> | Rolling a dice for <:Power:1331214328774529025> {power}...",
       timestamp=datetime.now(),
       color=discord.Color.purple()
     )
