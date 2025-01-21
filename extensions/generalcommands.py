@@ -12,6 +12,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
   def __init__(self, bot):
     self.bot = bot
   
+  @commands.guild_only()
   @commands.command(name="ban")
   @commands.has_permissions(ban_members=True)
   async def ban(
@@ -20,7 +21,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     members: commands.Greedy[discord.Member] = commands.parameter(
       description="The member(s) to be banned."
     ),
-    deleteDays: typing.Optional[int] = commands.parameter(
+    deletedays: typing.Optional[int] = commands.parameter(
       description="The days worth of message to be deleted from the user to be banned. Optional, and doesn't do anything if nothing is inputted.",
       displayed_name="delete days",
       default=0
@@ -40,6 +41,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     
     await ctx.reply(f"{banned} have been banned. Reason: {reason}")
   
+  @commands.guild_only()
   @commands.command(name="kick")
   @commands.has_permissions(kick_members=True)
   async def kick(
@@ -63,6 +65,7 @@ class ModerationCommands(commands.Cog, name="Moderation"):
     
     await ctx.reply(f"{kicked} have been kicked. Reason: {reason}")
 
+  @commands.guild_only()
   @commands.command(name="timeout")
   @commands.has_permissions(moderate_members=True)
   async def timeout(
@@ -94,6 +97,8 @@ class GeneralCommands(commands.Cog, name="General"):
   def __init__(self, bot):
     self.bot = bot
   
+  @commands.guild_only()
+  @commands.has_permissions(change_nickname=True)
   @commands.command(name="nick")
   async def nick(
     self,
