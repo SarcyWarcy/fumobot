@@ -1,6 +1,7 @@
 from discord.ext import commands
 from datetime import timedelta
 import asqlite
+import random
 
 # THIS IS ALL FOR CONVERTERS
 
@@ -41,6 +42,9 @@ async def checkBalance(id: int):
       )
       row = await result.fetchone()
       return row
+
+async def blackjackLogic(id: int, power: int):
+  pass
 
 # THIS IS FOR CHECKS
 

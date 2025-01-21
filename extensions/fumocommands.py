@@ -118,6 +118,10 @@ class FumoCommands(commands.Cog, name="Fumo"):
 
     await customutilities.updateBalance(ctx.author.id, winnings)
     await rolled.edit(embed=rolledEmbed)
+  
+  @commands.command(name="blackjack", aliases=["bj"])
+  async def blackjack(self, ctx, power: int = commands.parameter(description="The amount of power to be put on bet.")):
+    pass
 
 async def setup(bot):
   await bot.add_cog(FumoCommands(bot))

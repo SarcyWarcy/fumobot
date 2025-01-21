@@ -28,12 +28,19 @@ class MyHelpCommand(commands.HelpCommand):
   def __init__(self):
     super().__init__()
 
+  def get_command_signature(self, command):
+    if command.clean_params:
+      commandParams = [f"({p})" for p in command.clean_params.keys()]
+      return commandParams
+    else:
+      return False
+
   async def send_bot_help(self, mapping):
     botEmbeds = []
 
     for cog, commandsList in mapping.items():
       cogName =  cog.qualified_name if cog else "Uncategorized"
-      commands = "\n".join(f"**{cmd.name}** {cmd.signature if cmd.signature else ''}\n_{cmd.help if cmd.help else 'No Description Provided'}_" for cmd in commandsList)
+      commands = "\n".join(f"**{cmd.name}** {" ".join(f"{para}" for para in self.get_command_signature(cmd)) if cmd.signature else ''}\n_{cmd.help if cmd.help else 'No Description Provided'}_" for cmd in commandsList)
       botEmbeds.append(
         discord.Embed(title=cogName + " Commands", description=commands, color=discord.Color.purple(), timestamp=datetime.now())
         .set_footer(
@@ -53,7 +60,7 @@ class MyHelpCommand(commands.HelpCommand):
       commandParams = []
 
     commandEmbed = discord.Embed(
-      description=f"**{command.name} {command.signature if command.signature else ''}\n**{command.help}\n\n{'Arguments:' if commandParams else ''}\n\n{'\n'.join(f"{param.name} - _{param.description}_" for param in commandParams)}",
+      description=f"**{command.name} {" ".join(para for para in self.get_command_signature(command))}\n**{command.help}\n\n{'Arguments:' if commandParams else ''}\n\n{'\n'.join(f"{param.name} - _{param.description}_" for param in commandParams)}",
       color=discord.Color.purple(),
       timestamp=datetime.now()
       )
@@ -63,12 +70,13 @@ class MyHelpCommand(commands.HelpCommand):
     )
 
     channel = self.get_destination()
+    cmdparams = self.get_command_signature(command)
     await channel.send(embed=commandEmbed)
   
   async def send_cog_help(self, cog):
     cogEmbed = discord.Embed(
       title=f"{cog.qualified_name} Commands",
-      description=f"{cog.description}\n\n{'\n'.join(f"{command.name} {command.signature if command.signature else ''}" for command in cog.get_commands())}",
+      description=f"{cog.description}\n\n{'\n'.join(f"{command.name} {" ".join(para for para in self.get_command_signature(command))}" for command in cog.get_commands())}",
       timestamp=datetime.now(),
       color = discord.Color.purple()
     )
