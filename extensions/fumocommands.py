@@ -10,6 +10,7 @@ import asqlite
 from datetime import timedelta, datetime
 import random
 import pydealer as pd
+from discord.ext.commands.cooldowns import BucketType
 
 async def fumoDbCheck():
   async with asqlite.connect("fumo.db") as db:
@@ -50,7 +51,8 @@ class BlackjackView(View):
         item.disabled= True
 
       await self.message.edit(view=self)
-      await self.ctx.reply("You didn't respond in time! The whole game is cancelled, and fortunately, the dealer was kind enough to give you your money back.")
+      await self.ctx.reply("You didn't respond in time! The whole game is cancelled, and, the dealer took your power...")
+      await customutilities.updateBalance(self.ctx.author.id, self.bet * -1)
   
   @discord.ui.button(label="Hit!", style=discord.ButtonStyle.green)
   async def hitButton(self, interaction: discord.Interaction, button: Button):
@@ -71,6 +73,7 @@ class BlackjackView(View):
       await customutilities.updateBalance(self.ctx.author.id, self.bet * -1)
       self.gameOver()
       self.gameRover = True
+      self.stop()
 
     await interaction.response.edit_message(embed=self.embed, view=self)
   
@@ -105,6 +108,7 @@ class BlackjackView(View):
     )
 
     await interaction.response.edit_message(embed=self.embed, view=self)
+    self.stop()
   
   def gameOver(self):
     self.standButton.disabled = True
@@ -168,6 +172,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
     await ctx.reply(embed=balanceEmbed)
   
   @commands.command(name="dice")
+  @commands.max_concurrency(1,per=commands.BucketType.user,wait=False)
   async def dice(self, ctx, power: int = commands.parameter(description="The amount of power to be put on bet.")):
     """Gambles your power away. You win everytime you don't roll a 6. Pays out 0.2x of your original bet."""
     await customutilities.lowBalance(ctx, power=power)
@@ -209,6 +214,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
     await rolled.edit(embed=rolledEmbed)
   
   @commands.command(name="blackjack", aliases=["bj"])
+  @commands.max_concurrency(1,per=commands.BucketType.user,wait=False)
   async def blackjack(self, ctx, power: int = commands.parameter(description="The amount of power to be put on bet.")):
     """Gambles your power away in a game of Blackjack. Pays out 2x, and Blackjacks pays out 2.5x"""
     await customutilities.lowBalance(ctx, power=power)
@@ -241,6 +247,7 @@ class FumoCommands(commands.Cog, name="Fumo"):
       view.winnings = power + int((power * 0.5))
 
     view.message = await bjMessage.edit(embed=bjEmbed, view=view)
+    await view.wait()
 
 
 async def setup(bot):

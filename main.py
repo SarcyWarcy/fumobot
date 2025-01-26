@@ -219,6 +219,8 @@ async def on_command_error(ctx, err):
     await ctx.reply(f"I can't do this since you're the server owner!")
   elif isinstance(err, commands.NoPrivateMessage):
     await ctx.reply(f"Sorry, but you can only do this in a server!")
+  elif isinstance(err, commands.MaxConcurrencyReached):
+    await ctx.reply("Hey! Wait for the other command to finish first, then you can execute it again!")
   else:
     print(err)
     await ctx.reply(f"Err... an unexpected issue happened! The problem has been sent to Ryn... Hang on tight!")
